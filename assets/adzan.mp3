@@ -1,0 +1,2 @@
+// Dummy audio file untuk Adzan. (Dalam praktek nyata kita bisa download file mp3 aseli)
+module.exports = "dummy";

@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuy Solat — Jadwal Shalat</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Amiri:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-top">
+          <div class="hijri-row">
+            <button
+              class="hijri-adj-btn"
+              id="hijriMinus"
+              title="Koreksi -1 hari"
+            >
+              −
+            </button>
+            <div class="hijri-date" id="hijriDate">Loading...</div>
+            <button
+              class="hijri-adj-btn"
+              id="hijriPlus"
+              title="Koreksi +1 hari"
+            >
+              +
+            </button>
+          </div>
+          <button class="close-btn" id="closeBtn">✕</button>
+        </div>
+        <div class="masehi-date" id="masehiDate"></div>
+        <div class="location" id="location">
+          <svg
+            class="location-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span id="cityName">Mendeteksi lokasi...</span>
+        </div>
+      </div>
+
+      <!-- Countdown -->
+      <div class="countdown-section">
+        <div class="countdown-label">
+          Menuju <span id="nextPrayerName">—</span>
+        </div>
+        <div class="countdown-timer" id="countdown">--:--:--</div>
+      </div>
+
+      <!-- Prayer Times -->
+      <div class="prayer-list">
+        <div class="prayer-item" data-prayer="subuh">
+          <div class="prayer-left">
+            <div class="prayer-icon">🌙</div>
+            <div class="prayer-name">Subuh</div>
+          </div>
+          <div class="prayer-time" id="timeSubuh">--:--</div>
+        </div>
+
+        <div class="prayer-item" data-prayer="terbit">
+          <div class="prayer-left">
+            <div class="prayer-icon">🌅</div>
+            <div class="prayer-name">Terbit</div>
+          </div>
+          <div class="prayer-time" id="timeTerbit">--:--</div>
+        </div>
+
+        <div class="prayer-item" data-prayer="dzuhur">
+          <div class="prayer-left">
+            <div class="prayer-icon">☀️</div>
+            <div class="prayer-name">Dzuhur</div>
+          </div>
+          <div class="prayer-time" id="timeDzuhur">--:--</div>
+        </div>
+
+        <div class="prayer-item" data-prayer="ashar">
+          <div class="prayer-left">
+            <div class="prayer-icon">🌤️</div>
+            <div class="prayer-name">Ashar</div>
+          </div>
+          <div class="prayer-time" id="timeAshar">--:--</div>
+        </div>
+
+        <div class="prayer-item" data-prayer="maghrib">
+          <div class="prayer-left">
+            <div class="prayer-icon">🌇</div>
+            <div class="prayer-name">Maghrib</div>
+          </div>
+          <div class="prayer-time" id="timeMaghrib">--:--</div>
+        </div>
+
+        <div class="prayer-item" data-prayer="isya">
+          <div class="prayer-left">
+            <div class="prayer-icon">🌃</div>
+            <div class="prayer-name">Isya</div>
+          </div>
+          <div class="prayer-time" id="timeIsya">--:--</div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="footer-text">Kuy Solat v1.0</div>
+      </div>
+
+      <!-- Tombol Pengaturan -->
+      <button id="settingsBtn" class="settings-btn" title="Pengaturan">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+          ></path>
+        </svg>
+      </button>
+
+      <!-- Modal Pengaturan -->
+      <div id="settingsModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Pengaturan</h3>
+            <button id="closeSettingsBtn" class="close-modal-btn">✕</button>
+          </div>
+          <div class="modal-body">
+            <!-- Theme -->
+            <div class="form-group row-inline">
+              <label for="setTheme">Tema Visual</label>
+              <select id="setTheme" style="background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px;">
+                <option value="default">Default (Malam Ungu)</option>
+                <option value="hijau">Hijau Ketupat</option>
+                <option value="putih">Putih Porcelen</option>
+                <option value="hitam">Hitam Obsidian</option>
+              </select>
+            </div>
+          
+            <!-- Autostart -->
+            <div class="form-group row-inline">
+              <label for="setAutostart"
+                >Jalankan Otomatis saat Startup Windows</label
+              >
+              <input type="checkbox" id="setAutostart" />
+            </div>
+
+            <!-- Audio -->
+            <div class="form-group row-inline">
+              <label for="setAudioEnabled">Mainkan Audio Adzan</label>
+              <input type="checkbox" id="setAudioEnabled" />
+            </div>
+
+            <div class="form-group">
+              <label for="setAudioFile">File Audio Kustom (MP3/WAV)</label>
+              <div class="file-input-group">
+                <input
+                  type="text"
+                  id="setAudioFile"
+                  placeholder="Default Adzan"
+                  readonly
+                />
+                <button type="button" id="browseAudioBtn">Pilih File</button>
+                <button type="button" id="testAudioBtn">Test Suara</button>
+              </div>
+            </div>
+
+            <!-- Mute Options -->
+            <div class="form-group">
+              <label style="margin-top: 8px;">Matikan Suara (Mute) Pada Waktu:</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
+                <label style="display: flex; gap: 6px; align-items: center; justify-content: flex-start; cursor: pointer;"><input type="checkbox" id="muteSubuh" class="mute-cb"> Subuh</label>
+                <label style="display: flex; gap: 6px; align-items: center; justify-content: flex-start; cursor: pointer;"><input type="checkbox" id="muteTerbit" class="mute-cb"> Terbit</label>
+                <label style="display: flex; gap: 6px; align-items: center; justify-content: flex-start; cursor: pointer;"><input type="checkbox" id="muteDzuhur" class="mute-cb"> Dzuhur</label>
+                <label style="display: flex; gap: 6px; align-items: center; justify-content: flex-start; cursor: pointer;"><input type="checkbox" id="muteAshar" class="mute-cb"> Ashar</label>
+                <label style="display: flex; gap: 6px; align-items: center; justify-content: flex-start; cursor: pointer;"><input type="checkbox" id="muteMaghrib" class="mute-cb"> Maghrib</label>
+                <label style="display: flex; gap: 6px; align-items: center; justify-content: flex-start; cursor: pointer;"><input type="checkbox" id="muteIsya" class="mute-cb"> Isya</label>
+              </div>
+            </div>
+
+            <hr />
+
+            <!-- Lokasi -->
+            <div class="form-group row-inline">
+              <label for="setManualLocMode">Gunakan Lokasi Manual</label>
+              <input type="checkbox" id="setManualLocMode" />
+            </div>
+
+            <div class="form-group" id="manualLocGroup" style="display: none">
+              <label for="setManualCity">Nama Kota/Kabupaten</label>
+              <input
+                type="text"
+                id="setManualCity"
+                placeholder="Contoh: Surabaya, Jawa Timur"
+              />
+              <small
+                >Lokasi akan divalidasi dan diubah menjadi koordinat GPS secara
+                otomatis.</small
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="saveSettingsBtn" class="btn primary">
+              Simpan & Terapkan
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden Audio Element -->
+      <audio id="adzanPlayer" preload="none"></audio>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

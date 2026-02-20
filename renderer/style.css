@@ -1,0 +1,663 @@
+/* ===== CSS Reset & Base & Themes ===== */
+:root {
+  /* Default Theme (Malam Ungu) */
+  --bg-app: linear-gradient(165deg, #0f0c29 0%, #1a1245 30%, #24243e 60%, #0f0c29 100%);
+  --bg-app-glow-1: rgba(99, 71, 217, 0.15);
+  --bg-app-glow-2: rgba(45, 149, 210, 0.1);
+  --text-hijri: #e8d5b7;
+  --text-hijri-shadow: rgba(232, 213, 183, 0.3);
+  --btn-hijri-hover-bg: rgba(232, 213, 183, 0.15);
+  --countdown-text: linear-gradient(135deg, #a78bfa 0%, #6c63ff 40%, #4fc3f7 100%);
+  --countdown-shadow: rgba(108, 99, 255, 0.3);
+  --prayer-active-bg: linear-gradient(135deg, rgba(108, 99, 255, 0.12) 0%, rgba(79, 195, 247, 0.08) 100%);
+  --prayer-active-border: rgba(108, 99, 255, 0.25);
+  --prayer-active-shadow: rgba(108, 99, 255, 0.1);
+  --prayer-active-name: #c4b5fd;
+  --prayer-active-time: #a78bfa;
+  --base-text-color: #ffffff;
+  --base-text-opacity-8: rgba(255, 255, 255, 0.8);
+  --base-text-opacity-7: rgba(255, 255, 255, 0.7);
+  --base-text-opacity-6: rgba(255, 255, 255, 0.6);
+  --base-text-opacity-4: rgba(255, 255, 255, 0.4);
+  --base-text-opacity-2: rgba(255, 255, 255, 0.2);
+  --base-border-alpha: rgba(255, 255, 255, 0.08);
+  --base-icon-color: #6c63ff;
+  --theme-backdrop-blur: rgba(0, 0, 0, 0.75);
+  --theme-modal-bg: #1a1a2e;
+  --theme-btn-primary: #6c63ff;
+  --theme-btn-primary-hover: #5b53e8;
+}
+
+/* Theme: Hijau Ketupat */
+body.theme-hijau {
+  --bg-app: linear-gradient(165deg, #0f291e 0%, #15452f 30%, #1f5035 60%, #0d2117 100%);
+  --bg-app-glow-1: rgba(71, 217, 137, 0.15);
+  --bg-app-glow-2: rgba(181, 210, 45, 0.1);
+  --text-hijri: #d5e8b7;
+  --text-hijri-shadow: rgba(213, 232, 183, 0.3);
+  --btn-hijri-hover-bg: rgba(213, 232, 183, 0.15);
+  --countdown-text: linear-gradient(135deg, #a7faa7 0%, #63ff87 40%, #aef74f 100%);
+  --countdown-shadow: rgba(99, 255, 120, 0.3);
+  --prayer-active-bg: linear-gradient(135deg, rgba(99, 255, 120, 0.12) 0%, rgba(181, 247, 79, 0.08) 100%);
+  --prayer-active-border: rgba(99, 255, 120, 0.25);
+  --prayer-active-shadow: rgba(99, 255, 120, 0.1);
+  --prayer-active-name: #b5fdca;
+  --prayer-active-time: #a7faa7;
+  --base-icon-color: #63ff87;
+  --theme-modal-bg: #112a1f;
+  --theme-btn-primary: #34c759;
+  --theme-btn-primary-hover: #2db34f;
+}
+
+/* Theme: Putih Porcelen (Light Mode) */
+body.theme-putih {
+  --bg-app: linear-gradient(165deg, #f0f4f8 0%, #e1e8f0 30%, #d1dbe5 60%, #f0f4f8 100%);
+  --bg-app-glow-1: rgba(99, 71, 217, 0.05); /* Soft purplish glow */
+  --bg-app-glow-2: rgba(45, 149, 210, 0.05);
+  --text-hijri: #bfa67a;
+  --text-hijri-shadow: rgba(191, 166, 122, 0.2);
+  --btn-hijri-hover-bg: rgba(191, 166, 122, 0.15);
+  --countdown-text: linear-gradient(135deg, #7c3aed 0%, #4f46e5 40%, #0284c7 100%);
+  --countdown-shadow: rgba(79, 70, 229, 0.2);
+  --prayer-active-bg: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(2, 132, 199, 0.05) 100%);
+  --prayer-active-border: rgba(79, 70, 229, 0.4);
+  --prayer-active-shadow: rgba(79, 70, 229, 0.1);
+  --prayer-active-name: #4c1d95;
+  --prayer-active-time: #4338ca;
+  --base-text-color: #1e293b;
+  --base-text-opacity-8: rgba(30, 41, 59, 0.9);
+  --base-text-opacity-7: rgba(30, 41, 59, 0.8);
+  --base-text-opacity-6: rgba(30, 41, 59, 0.7);
+  --base-text-opacity-4: rgba(30, 41, 59, 0.5);
+  --base-text-opacity-2: rgba(30, 41, 59, 0.3);
+  --base-border-alpha: rgba(30, 41, 59, 0.1);
+  --base-icon-color: #4f46e5;
+  --theme-backdrop-blur: rgba(255, 255, 255, 0.6);
+  --theme-modal-bg: #ffffff;
+  --theme-btn-primary: #4f46e5;
+  --theme-btn-primary-hover: #4338ca;
+}
+
+/* Memastikan border dan tombol pada hover tidak melayang warnanya */
+body.theme-putih .prayer-item { background: rgba(0, 0, 0, 0.02); }
+body.theme-putih .prayer-item:hover { background: rgba(0, 0, 0, 0.05); border-color: rgba(30, 41, 59, 0.1); }
+body.theme-putih .hijri-adj-btn, body.theme-putih .close-btn { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--base-text-color); }
+body.theme-putih .location { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+body.theme-putih .form-group input[type="text"] { background: #f8fafc; border-color:#e2e8f0; color:#1e293b; }
+body.theme-putih .form-group select { background: #f8fafc !important; border-color:#e2e8f0 !important; color:#1e293b !important; }
+body.theme-putih .modal-header h3 { color: #1e293b; }
+body.theme-putih .file-input-group button { background: #f1f5f9; border-color:#cbd5e1; color:#0f172a; }
+body.theme-putih .file-input-group button:hover { background: #e2e8f0; }
+body.theme-putih .settings-btn { color: rgba(0,0,0,0.4); }
+body.theme-putih .settings-btn:hover { color: #4f46e5; }
+
+/* Theme: Hitam Obsidian */
+body.theme-hitam {
+  --bg-app: linear-gradient(165deg, #09090b 0%, #121214 30%, #18181b 60%, #050505 100%);
+  --bg-app-glow-1: rgba(255, 255, 255, 0.05);
+  --bg-app-glow-2: rgba(255, 255, 255, 0.02);
+  --text-hijri: #e4e4e7;
+  --text-hijri-shadow: rgba(228, 228, 231, 0.2);
+  --btn-hijri-hover-bg: rgba(228, 228, 231, 0.15);
+  --countdown-text: linear-gradient(135deg, #f4f4f5 0%, #d4d4d8 40%, #a1a1aa 100%);
+  --countdown-shadow: rgba(212, 212, 216, 0.2);
+  --prayer-active-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(200, 200, 200, 0.05) 100%);
+  --prayer-active-border: rgba(255, 255, 255, 0.2);
+  --prayer-active-shadow: rgba(255, 255, 255, 0.05);
+  --prayer-active-name: #ffffff;
+  --prayer-active-time: #f4f4f5;
+  --base-icon-color: #d4d4d8;
+  --theme-modal-bg: #18181b;
+  --theme-btn-primary: #3f3f46;
+  --theme-btn-primary-hover: #52525b;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+  -webkit-app-region: drag;
+}
+
+/* ===== App Container ===== */
+.app {
+  width: 360px;
+  min-height: 560px;
+  background: var(--bg-app);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.app::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(
+      ellipse at 30% 20%,
+      var(--bg-app-glow-1) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 70% 80%,
+      var(--bg-app-glow-2) 0%,
+      transparent 50%
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== Header ===== */
+.header {
+  padding: 16px 20px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--base-border-alpha);
+}
+
+.header-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.hijri-date {
+  font-family: "Amiri", serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-hijri);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 20px var(--text-hijri-shadow);
+}
+
+.hijri-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hijri-adj-btn {
+  -webkit-app-region: no-drag;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(232, 213, 183, 0.6);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.hijri-adj-btn:hover {
+  background: var(--btn-hijri-hover-bg);
+  border-color: var(--text-hijri-shadow);
+  color: var(--text-hijri);
+}
+
+.close-btn {
+  -webkit-app-region: no-drag;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--base-text-opacity-4);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 77, 77, 0.2);
+  border-color: rgba(255, 77, 77, 0.3);
+  color: #ff6b6b;
+}
+
+.masehi-date {
+  font-size: 12px;
+  color: var(--base-text-opacity-4);
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.location {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--base-border-alpha);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.location:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.location-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--base-icon-color);
+}
+
+#cityName {
+  font-size: 11px;
+  color: var(--base-text-opacity-6);
+  font-weight: 500;
+}
+
+/* ===== Countdown ===== */
+.countdown-section {
+  padding: 14px 20px;
+  text-align: center;
+}
+
+.countdown-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--base-text-opacity-4);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.countdown-label span {
+  color: var(--base-text-color);
+  font-weight: 700;
+}
+
+.countdown-timer {
+  font-size: 42px;
+  font-weight: 800;
+  background: var(--countdown-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  text-shadow: none;
+  filter: drop-shadow(0 0 25px var(--countdown-shadow));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Prayer List ===== */
+.prayer-list {
+  padding: 4px 16px 4px;
+}
+
+.prayer-item {
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  margin-bottom: 2px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.prayer-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.prayer-item.active {
+  background: var(--prayer-active-bg);
+  border-color: var(--prayer-active-border);
+  box-shadow:
+    0 4px 15px var(--prayer-active-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.prayer-item.active .prayer-name {
+  color: var(--prayer-active-name);
+  font-weight: 600;
+}
+
+.prayer-item.active .prayer-time {
+  color: var(--prayer-active-time);
+  font-weight: 700;
+}
+
+.prayer-item.passed {
+  opacity: 0.4;
+}
+
+.prayer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prayer-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.prayer-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--base-text-opacity-8);
+  letter-spacing: 0.3px;
+}
+
+.prayer-time {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--base-text-opacity-7);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Footer ===== */
+.footer {
+  padding: 12px 20px;
+  text-align: center;
+  border-top: 1px solid var(--base-border-alpha);
+}
+
+.footer-text {
+  font-size: 10px;
+  color: var(--base-text-opacity-2);
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prayer-item {
+  animation: fadeInUp 0.4s ease forwards;
+  opacity: 0;
+}
+
+.prayer-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.prayer-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.prayer-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.prayer-item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.prayer-item:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.prayer-item:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.prayer-item.active .prayer-icon {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* ===== Settings Button ===== */
+.settings-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  -webkit-app-region: no-drag;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  color: #c4b5fd;
+  transform: rotate(45deg);
+}
+
+/* ===== Modal ===== */
+.modal {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--theme-backdrop-blur);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+}
+
+.modal.show {
+  display: flex;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background: var(--theme-modal-bg);
+  width: 90%;
+  max-width: 320px;
+  border-radius: 12px;
+  border: 1px solid var(--base-border-alpha);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--base-border-alpha);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  color: var(--base-text-color);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.close-modal-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.close-modal-btn:hover {
+  color: #ff6b6b;
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.modal-body hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin: 4px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row-inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.row-inline label {
+  flex: 1;
+}
+
+.form-group label {
+  font-size: 12px;
+  color: var(--base-text-opacity-8);
+}
+
+.form-group small {
+  font-size: 10px;
+  color: var(--base-text-opacity-4);
+}
+
+.form-group input[type="text"] {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--base-border-alpha);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--base-text-color);
+  font-size: 13px;
+  width: 100%;
+}
+.form-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--theme-btn-primary);
+}
+
+.file-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.file-input-group button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.file-input-group button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: right;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn.primary {
+  background: var(--theme-btn-primary);
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: var(--theme-btn-primary-hover);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
