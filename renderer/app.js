@@ -1,18 +1,18 @@
-const { ipcRenderer } = require('electron');
+const { invoke } = window.__TAURI__.core;
+const { listen } = window.__TAURI__.event;
+const { convertFileSrc } = window.__TAURI__.core;
 
 let countdownInterval = null;
 let currentData = null;
-let hijriOffset = 0; // Koreksi tanggal Hijriyah (dalam hari)
-let currentSettings = null; // Menyimpan settings lokal di frontend
+let hijriOffset = 0;
+let currentSettings = null;
 
-// DOM Elements Settings Modal
 const settingsModal = document.getElementById('settingsModal');
 const settingsBtn = document.getElementById('settingsBtn');
 const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 const adzanPlayer = document.getElementById('adzanPlayer');
 
-// Setup form element references
 const fAutostart = document.getElementById('setAutostart');
 const fAudioEnabled = document.getElementById('setAudioEnabled');
 const fAudioFile = document.getElementById('setAudioFile');
@@ -20,42 +20,58 @@ const browseAudioBtn = document.getElementById('browseAudioBtn');
 const fManualLocMode = document.getElementById('setManualLocMode');
 const manualLocGroup = document.getElementById('manualLocGroup');
 const fManualCity = document.getElementById('setManualCity');
-const fTheme = document.getElementById('setTheme'); // Theme combo
+const fTheme = document.getElementById('setTheme');
+const testAudioBtn = document.getElementById('testAudioBtn');
 const cbMutes = {
   subuh: document.getElementById('muteSubuh'),
   terbit: document.getElementById('muteTerbit'),
   dzuhur: document.getElementById('muteDzuhur'),
   ashar: document.getElementById('muteAshar'),
   maghrib: document.getElementById('muteMaghrib'),
-  isya: document.getElementById('muteIsya')
+  isya: document.getElementById('muteIsya'),
 };
 
-// Muat offset dari main process
-ipcRenderer.invoke('get-hijri-offset').then(offset => {
-  hijriOffset = offset || 0;
+async function init() {
+  hijriOffset = (await invoke('get_hijri_offset')) || 0;
   updateDateDisplay();
-});
 
-// Load settings saat app load
-ipcRenderer.invoke('get-settings').then(settings => {
-  currentSettings = settings;
-  applyTheme(settings.theme || 'default');
-  populateSettingsForm(settings);
-});
+  currentSettings = await invoke('get_settings');
+  applyTheme(currentSettings.theme || 'default');
+  populateSettingsForm(currentSettings);
 
-// Terima data dari main process
-ipcRenderer.on('prayer-data', (event, data) => {
-  currentData = data;
-  renderPrayerTimes(data);
-  startCountdown(data);
-  updateDateDisplay(data);
-  updateLocation(data);
-});
+  const initial = await invoke('get_prayer_data');
+  currentData = initial;
+  renderPrayerTimes(initial);
+  startCountdown(initial);
+  updateDateDisplay();
+  updateLocation(initial);
 
-// Mainkan Adzan
-ipcRenderer.on('play-adzan', (event, payload) => {
+  await listen('prayer-data', (event) => {
+    currentData = event.payload;
+    renderPrayerTimes(event.payload);
+    startCountdown(event.payload);
+    updateDateDisplay();
+    updateLocation(event.payload);
+  });
+
+  await listen('play-adzan', (event) => {
+    playAdzan(event.payload);
+  });
+}
+
+function resolveAudioSrc(audioFilePath) {
+  if (audioFilePath && audioFilePath !== 'default') {
+    try {
+      return convertFileSrc(audioFilePath);
+    } catch {
+      return audioFilePath;
+    }
+  }
+  return './assets/adzan.mp3';
+}
+
+function playAdzan(payload) {
   try {
-    // Handling argumen baru (object) vs lama (string fallback)
     let audioFilePath = 'default';
     let prayerName = null;
 
@@ -63,99 +79,76 @@ ipcRenderer.on('play-adzan', (event, payload) => {
       audioFilePath = payload;
     } else if (payload && typeof payload === 'object') {
       audioFilePath = payload.file;
-      prayerName = payload.prayerName; // e.g 'subuh', 'dzuhur'
+      prayerName = payload.prayerName;
     }
 
-    // Cek apakah waktu shalat ini di-mute?
-    if (prayerName && currentSettings?.audio?.muted) {
-      if (currentSettings.audio.muted[prayerName] === true) {
-        console.log(`Adzan untuk ${prayerName} dibisukan (muted) oleh pengguna.`);
-        return; // Jangan play
-      }
+    if (prayerName && currentSettings?.audio?.muted?.[prayerName] === true) {
+      return;
     }
 
-    if (audioFilePath && audioFilePath !== 'default') {
-      adzanPlayer.src = audioFilePath;
-    } else {
-      // Gunakan default path dari dir assets main/app app.getAppPath() 
-      // Karena kita di renderer local, kita bisa tembak relative jika disajikan path native.
-      // Sederhananya, file default ada di /assets/adzan.mp3
-      adzanPlayer.src = '../assets/adzan.mp3'; 
-    }
-    
-    // Play with small delay or direct
+    adzanPlayer.src = resolveAudioSrc(audioFilePath);
     adzanPlayer.currentTime = 0;
-    adzanPlayer.play().catch(e => {
-       console.error("Audio play failed:", e);
-    });
-  } catch(e) {
-    console.warn("Could not play adzan", e);
+    adzanPlayer.play().catch((e) => console.error('Audio play failed:', e));
+  } catch (e) {
+    console.warn('Could not play adzan', e);
   }
-});
+}
 
-// ======== Handlers Modal ========
-
-settingsBtn.addEventListener('click', () => {
-  if (currentSettings) {
-     populateSettingsForm(currentSettings);
-  }
+settingsBtn.addEventListener('click', async () => {
+  if (currentSettings) populateSettingsForm(currentSettings);
   settingsModal.classList.add('show');
+  await invoke('set_settings_open', { open: true });
 });
 
-closeSettingsBtn.addEventListener('click', () => {
+closeSettingsBtn.addEventListener('click', async () => {
   settingsModal.classList.remove('show');
+  await invoke('set_settings_open', { open: false });
 });
 
-// Toggle Mode Lokasi di form
 fManualLocMode.addEventListener('change', (e) => {
   manualLocGroup.style.display = e.target.checked ? 'block' : 'none';
 });
 
-// Tombol Browse file khusus via ipcRenderer showOpenDialog
-const testAudioBtn = document.getElementById('testAudioBtn');
-
 browseAudioBtn.addEventListener('click', async () => {
-  const filePath = await ipcRenderer.invoke('dialog:openFile');
+  await invoke('set_settings_open', { open: true });
+  const filePath = await invoke('pick_audio_file');
   if (filePath) {
-      fAudioFile.value = filePath;
+    fAudioFile.value = filePath;
   }
 });
 
-// Test memutar audio yang ada di kotak input 
 testAudioBtn.addEventListener('click', () => {
   let tempAudioPath = fAudioFile.value;
   if (!tempAudioPath || tempAudioPath === 'default') {
-      tempAudioPath = '../assets/adzan.mp3';
+    tempAudioPath = 'default';
   }
-  
+
   if (adzanPlayer.paused) {
-      adzanPlayer.src = tempAudioPath;
-      adzanPlayer.currentTime = 0;
-      adzanPlayer.play().catch(e => console.error("Test Play failed", e));
-      testAudioBtn.textContent = 'Stop Suara';
+    adzanPlayer.src = resolveAudioSrc(tempAudioPath);
+    adzanPlayer.currentTime = 0;
+    adzanPlayer.play().catch((e) => console.error('Test Play failed', e));
+    testAudioBtn.textContent = 'Stop Suara';
   } else {
-      adzanPlayer.pause();
-      adzanPlayer.currentTime = 0;
-      testAudioBtn.textContent = 'Test Suara';
+    adzanPlayer.pause();
+    adzanPlayer.currentTime = 0;
+    testAudioBtn.textContent = 'Test Suara';
   }
 });
 
-// Kembalikan tulisan tombol saat audio selesai main
 adzanPlayer.addEventListener('ended', () => {
   testAudioBtn.textContent = 'Test Suara';
 });
 
-// Handler saat Theme diganti secara live preview
 fTheme.addEventListener('change', (e) => {
   applyTheme(e.target.value);
 });
 
-// Simpan Setting
 saveSettingsBtn.addEventListener('click', async () => {
   const newSettings = {
     ...currentSettings,
     autoStart: fAutostart.checked,
     theme: fTheme.value || 'default',
+    hijriOffset,
     audio: {
       enabled: fAudioEnabled.checked,
       file: fAudioFile.value || 'default',
@@ -165,28 +158,34 @@ saveSettingsBtn.addEventListener('click', async () => {
         dzuhur: cbMutes.dzuhur.checked,
         ashar: cbMutes.ashar.checked,
         maghrib: cbMutes.maghrib.checked,
-        isya: cbMutes.isya.checked
-      }
+        isya: cbMutes.isya.checked,
+      },
     },
     location: {
       type: fManualLocMode.checked ? 'manual' : 'auto',
       manualCity: fManualCity.value || currentSettings.location?.manualCity || 'Jakarta',
-      manualCoordinates: currentSettings.location?.manualCoordinates || {}
-    }
+      manualCoordinates: currentSettings.location?.manualCoordinates || {
+        latitude: -6.2088,
+        longitude: 106.8456,
+      },
+    },
   };
 
   saveSettingsBtn.textContent = 'Menyimpan...';
-  
-  // Kirim untuk disimpan dan terapkan efaknya
-  const updated = await ipcRenderer.invoke('save-settings', newSettings);
-  currentSettings = updated;
-  
-  saveSettingsBtn.textContent = 'Simpan & Terapkan';
-  settingsModal.classList.remove('show');
+  try {
+    const updated = await invoke('save_app_settings', { newSettings });
+    currentSettings = updated;
+    settingsModal.classList.remove('show');
+    await invoke('set_settings_open', { open: false });
+  } catch (e) {
+    console.error(e);
+    alert('Gagal menyimpan pengaturan: ' + e);
+  } finally {
+    saveSettingsBtn.textContent = 'Simpan & Terapkan';
+  }
 });
 
 function applyTheme(themeName) {
-  // Clear semua theme class di body
   document.body.classList.remove('theme-hijau', 'theme-putih', 'theme-hitam');
   if (themeName && themeName !== 'default') {
     document.body.classList.add('theme-' + themeName);
@@ -198,8 +197,8 @@ function populateSettingsForm(settings) {
   fAutostart.checked = settings.autoStart === true;
   fTheme.value = settings.theme || 'default';
   fAudioEnabled.checked = settings.audio?.enabled === true;
-  fAudioFile.value = settings.audio?.file === 'default' ? '' : settings.audio?.file;
-  
+  fAudioFile.value = settings.audio?.file === 'default' ? '' : settings.audio?.file || '';
+
   if (settings.audio?.muted) {
     cbMutes.subuh.checked = settings.audio.muted.subuh === true;
     cbMutes.terbit.checked = settings.audio.muted.terbit === true;
@@ -208,45 +207,37 @@ function populateSettingsForm(settings) {
     cbMutes.maghrib.checked = settings.audio.muted.maghrib === true;
     cbMutes.isya.checked = settings.audio.muted.isya === true;
   }
-  
+
   if (settings.location?.type === 'manual') {
-      fManualLocMode.checked = true;
-      manualLocGroup.style.display = 'block';
+    fManualLocMode.checked = true;
+    manualLocGroup.style.display = 'block';
   } else {
-      fManualLocMode.checked = false;
-      manualLocGroup.style.display = 'none';
+    fManualLocMode.checked = false;
+    manualLocGroup.style.display = 'none';
   }
-  
+
   fManualCity.value = settings.location?.manualCity || '';
 }
 
-// ======== Handlers Header/Base ========
-
-// Tombol close utama
 document.getElementById('closeBtn').addEventListener('click', () => {
-  ipcRenderer.send('hide-window');
+  invoke('hide_window');
 });
 
-// Tombol koreksi Hijriyah
-document.getElementById('hijriMinus').addEventListener('click', () => {
+document.getElementById('hijriMinus').addEventListener('click', async () => {
   hijriOffset--;
-  ipcRenderer.send('set-hijri-offset', hijriOffset);
+  await invoke('set_hijri_offset', { offset: hijriOffset });
   updateDateDisplay();
 });
 
-document.getElementById('hijriPlus').addEventListener('click', () => {
+document.getElementById('hijriPlus').addEventListener('click', async () => {
   hijriOffset++;
-  ipcRenderer.send('set-hijri-offset', hijriOffset);
+  await invoke('set_hijri_offset', { offset: hijriOffset });
   updateDateDisplay();
 });
 
-/**
- * Render jadwal shalat ke DOM
- */
 function renderPrayerTimes(data) {
   const { prayerTimes, currentPrayer, nextPrayer } = data;
 
-  // Set waktu
   document.getElementById('timeSubuh').textContent = prayerTimes.subuh;
   document.getElementById('timeTerbit').textContent = prayerTimes.terbit;
   document.getElementById('timeDzuhur').textContent = prayerTimes.dzuhur;
@@ -254,15 +245,14 @@ function renderPrayerTimes(data) {
   document.getElementById('timeMaghrib').textContent = prayerTimes.maghrib;
   document.getElementById('timeIsya').textContent = prayerTimes.isya;
 
-  // Highlight aktif & yang sudah lewat
   const prayerOrder = ['subuh', 'terbit', 'dzuhur', 'ashar', 'maghrib', 'isya'];
   const prayerNameMap = {
-    'Subuh': 'subuh',
-    'Terbit': 'terbit',
-    'Dzuhur': 'dzuhur',
-    'Ashar': 'ashar',
-    'Maghrib': 'maghrib',
-    'Isya': 'isya'
+    Subuh: 'subuh',
+    Terbit: 'terbit',
+    Dzuhur: 'dzuhur',
+    Ashar: 'ashar',
+    Maghrib: 'maghrib',
+    Isya: 'isya',
   };
 
   const currentKey = currentPrayer ? prayerNameMap[currentPrayer] : null;
@@ -270,7 +260,7 @@ function renderPrayerTimes(data) {
 
   let passedCurrent = false;
 
-  prayerOrder.forEach(key => {
+  prayerOrder.forEach((key) => {
     const item = document.querySelector(`[data-prayer="${key}"]`);
     if (!item) return;
 
@@ -292,19 +282,13 @@ function renderPrayerTimes(data) {
     }
   });
 
-  // Set next prayer name
   if (nextPrayer) {
     document.getElementById('nextPrayerName').textContent = nextPrayer.name;
   }
 }
 
-/**
- * Start countdown timer ke waktu shalat berikutnya
- */
 function startCountdown(data) {
-  if (countdownInterval) {
-    clearInterval(countdownInterval);
-  }
+  if (countdownInterval) clearInterval(countdownInterval);
 
   const { nextPrayer } = data;
   if (!nextPrayer || !nextPrayer.time) return;
@@ -317,7 +301,7 @@ function startCountdown(data) {
 
     if (diff <= 0) {
       document.getElementById('countdown').textContent = '00:00:00';
-      ipcRenderer.send('refresh-data');
+      invoke('refresh_data');
       return;
     }
 
@@ -325,31 +309,25 @@ function startCountdown(data) {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    document.getElementById('countdown').textContent =
-      `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    document.getElementById('countdown').textContent = `${String(hours).padStart(2, '0')}:${String(
+      minutes,
+    ).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
   updateCountdown();
   countdownInterval = setInterval(updateCountdown, 1000);
 }
 
-/**
- * Update tampilan tanggal (Masehi + Hijriyah dengan koreksi)
- */
 function updateDateDisplay() {
   const now = new Date();
 
-  // Tanggal Masehi
-  const masehiOptions = {
+  document.getElementById('masehiDate').textContent = now.toLocaleDateString('id-ID', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
-  };
-  document.getElementById('masehiDate').textContent =
-    now.toLocaleDateString('id-ID', masehiOptions);
+    day: 'numeric',
+  });
 
-  // Tanggal Hijriyah dengan koreksi offset
   try {
     const correctedDate = new Date(now);
     correctedDate.setDate(correctedDate.getDate() + hijriOffset);
@@ -357,7 +335,7 @@ function updateDateDisplay() {
     const hijriFormatter = new Intl.DateTimeFormat('id-u-ca-islamic', {
       day: 'numeric',
       month: 'long',
-      year: 'numeric'
+      year: 'numeric',
     });
 
     let hijriText = hijriFormatter.format(correctedDate);
@@ -366,21 +344,19 @@ function updateDateDisplay() {
       hijriText += ` (${sign}${hijriOffset})`;
     }
     document.getElementById('hijriDate').textContent = hijriText;
-  } catch (e) {
+  } catch {
     document.getElementById('hijriDate').textContent = 'Hijriyah';
   }
 }
 
-/**
- * Update lokasi display
- */
 function updateLocation(data) {
   if (data.location) {
     const { city, region } = data.location;
-    document.getElementById('cityName').textContent =
-      city ? `${city}, ${region}` : region || 'Indonesia';
+    document.getElementById('cityName').textContent = city
+      ? `${city}${region ? ', ' + region : ''}`
+      : region || 'Indonesia';
   }
 }
 
-// init date display segera
 updateDateDisplay();
+init().catch((e) => console.error('Init failed', e));

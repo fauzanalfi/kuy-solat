@@ -2,12 +2,12 @@
 
 <h1>🕌 Kuy Solat</h1>
 
-<p>Aplikasi jadwal shalat ringan untuk Windows yang bersemayam di <strong>system tray</strong>. Selalu dekat, tidak mengganggu.</p>
+<p>Aplikasi jadwal shalat ringan untuk desktop yang bersemayam di <strong>system tray</strong>. Selalu dekat, tidak mengganggu — sekarang berbasis <strong>Tauri 2</strong> (lebih native, lebih hemat resource).</p>
 
-[![Platform](https://img.shields.io/badge/Platform-Windows-blue?logo=windows)](https://github.com)
-[![Electron](https://img.shields.io/badge/Built%20with-Electron%2028-47848F?logo=electron)](https://www.electronjs.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)](https://github.com/fauzanalfi/kuy-solat)
+[![Tauri](https://img.shields.io/badge/Built%20with-Tauri%202-24C8DB?logo=tauri)](https://tauri.app/)
 [![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange)](./package.json)
+[![Version](https://img.shields.io/badge/Version-2.0.0-orange)](./package.json)
 
 </div>
 
@@ -19,49 +19,24 @@
 | ------------------------------ | ----------------------------------------------------------------------------------- |
 | 🗺️ **Deteksi Lokasi Otomatis** | Mendeteksi kota & koordinat GPS pengguna secara otomatis via IP                     |
 | 📍 **Lokasi Manual**           | Input nama kota, dikonversi ke koordinat GPS via Photon Geocoding API               |
-| 🕐 **Hitung Akurat (Kemenag)** | Kalkulasi waktu shalat menggunakan metode Kementerian Agama RI (Fajr 20°, Isha 18°) |
-| ⏱️ **Countdown Real-time**     | Hitungan mundur menuju waktu shalat berikutnya, diperbarui setiap menit             |
-| 🔔 **Notifikasi & Adzan**      | Notifikasi Windows pop-up beserta audio adzan saat masuk waktu shalat               |
+| 🕐 **Hitung Akurat (Kemenag)** | Kalkulasi waktu shalat Fajr 20°, Isha 18° + ihtiyat 2 menit (via crate `salah`)     |
+| ⏱️ **Countdown Real-time**     | Hitungan mundur menuju waktu shalat berikutnya                                      |
+| 🔔 **Notifikasi & Adzan**      | Notifikasi native beserta audio adzan saat masuk waktu shalat                       |
 | 🔇 **Mute Per Waktu Shalat**   | Matikan suara adzan secara selektif untuk masing-masing waktu shalat                |
 | 📅 **Tanggal Hijriah**         | Menampilkan tanggal Hijriah dengan fitur koreksi ±1 hari                            |
-| 🎨 **4 Tema Visual**           | Pilihan tema: Malam Ungu, Hijau Ketupat, Putih Porselen, Hitam Obsidian             |
-| 🔊 **Audio Kustom**            | Pilih file audio adzan sendiri (MP3/WAV) atau gunakan audio bawaan                  |
-| 🚀 **Autostart**               | Opsional berjalan otomatis saat Windows menyala                                     |
-| 💤 **Resume dari Sleep**       | Memperbarui data jadwal otomatis setelah PC bangun dari mode Sleep/Hibernate        |
-
----
-
-## 📸 Tampilan
-
-> Klik ikon di system tray → popup jadwal shalat muncul.
-
-```
-┌─────────────────────────────────┐
-│  − 10 Sya'ban 1446 H +      ✕  │
-│    Jum'at, 21 Februari 2026     │
-│    📍 Jakarta                   │
-├─────────────────────────────────┤
-│       Menuju Ashar              │
-│         01:23:45                │
-├─────────────────────────────────┤
-│  🌙  Subuh       04:28          │
-│  🌅  Terbit      05:45          │
-│  ☀️  Dzuhur      11:52          │
-│  🌤️  Ashar       15:12   ◀ now  │
-│  🌇  Maghrib     17:58          │
-│  🌃  Isya        19:10          │
-└─────────────────────────────────┘
-```
+| 🎨 **4 Tema Visual**           | Malam Ungu, Hijau Ketupat, Putih Porselen, Hitam Obsidian                           |
+| 🔊 **Audio Kustom**            | Pilih file audio adzan sendiri (MP3/WAV/OGG) atau gunakan audio bawaan              |
+| 🚀 **Autostart**               | Opsional berjalan otomatis saat sistem menyala                                      |
 
 ---
 
 ## 🛠️ Teknologi
 
-- **[Electron](https://www.electronjs.org/)** v28 — Desktop app framework
-- **[Adhan.js](https://github.com/batoulapps/adhan-js)** — Kalkulasi waktu shalat yang presisi
-- **[electron-store](https://github.com/sindresorhus/electron-store)** — Penyimpanan pengaturan pengguna
-- **[Photon Geocoding API](https://photon.komoot.io/)** — Konversi nama kota ke koordinat GPS
-- **[freeipapi.com](https://freeipapi.com)** — Deteksi lokasi otomatis via IP
+- **[Tauri 2](https://tauri.app/)** — shell native (Rust) + WebView tipis
+- **[salah](https://crates.io/crates/salah)** — kalkulasi waktu shalat (port Adhan)
+- **Photon Geocoding API** — konversi nama kota → koordinat
+- **freeipapi.com** — deteksi lokasi otomatis via IP
+- Frontend vanilla HTML/CSS/JS di folder `renderer/`
 
 ---
 
@@ -69,52 +44,39 @@
 
 ### Prasyarat
 
-- [Node.js](https://nodejs.org/) v18 atau lebih baru
-- npm v9+
+- [Node.js](https://nodejs.org/) v18+
+- [Rust](https://rustup.rs/) stable (1.77+)
+- Dependency OS untuk Tauri: lihat [prerequisites](https://v2.tauri.app/start/prerequisites/)
 
 ### Instalasi
 
 ```bash
-# Clone repositori ini
-git clone https://github.com/username/kuy-solat.git
-
-# Masuk ke direktori proyek
+git clone https://github.com/fauzanalfi/kuy-solat.git
 cd kuy-solat
-
-# Install dependensi
 npm install
 ```
 
-### Menjalankan Aplikasi
+### Menjalankan
 
 ```bash
-npm start
+npm run dev
 ```
 
-Aplikasi akan berjalan dan muncul di **system tray** (pojok kanan bawah taskbar Windows). Klik ikonnya untuk membuka jadwal shalat.
+Aplikasi muncul di **system tray**. Klik ikonnya untuk membuka jadwal shalat.
 
 ---
 
 ## 📦 Build Installer
 
-Untuk menghasilkan file installer Windows (`.exe`):
-
 ```bash
-# Generate ikon terlebih dahulu (hanya diperlukan sekali)
-node generate-icon.js
+# (opsional) regenerate ikon dari assets/icon.png
+npm run icon
 
-# Build installer
+# Build native installer untuk platform saat ini
 npm run build
 ```
 
-File installer akan tersedia di folder `dist/`:
-
-```
-dist/
-└── Kuy Solat Setup 1.0.0.exe   ← Installer siap pakai
-```
-
-> **Catatan:** Proses build pertama kali akan mengunduh beberapa aset (NSIS, winCodeSign) dan membutuhkan koneksi internet.
+Output ada di `src-tauri/target/release/bundle/` (NSIS/MSI di Windows, deb/AppImage di Linux, dmg di macOS).
 
 ---
 
@@ -122,75 +84,64 @@ dist/
 
 ```
 kuy-solat/
-├── main.js                  # Entry point Electron (main process)
-├── generate-icon.js         # Script generator ikon PNG 256x256
-├── package.json
+├── package.json             # Script Tauri CLI + deps frontend API
 ├── assets/
-│   ├── icon.png             # Ikon aplikasi
-│   └── adzan.mp3            # Audio adzan bawaan
-├── renderer/
-│   ├── index.html           # UI utama aplikasi
-│   ├── app.js               # Logic renderer (IPC, countdown, UI)
-│   └── style.css            # Styling & tema visual
-└── src/
-    ├── prayer-times.js      # Kalkulasi waktu shalat (Adhan.js)
-    ├── location.js          # Deteksi & manajemen lokasi
-    ├── notification.js      # Penjadwalan notifikasi & adzan
-    └── store.js             # Konfigurasi electron-store
+│   ├── icon.png
+│   └── adzan.mp3
+├── renderer/                # UI WebView
+│   ├── index.html
+│   ├── app.js
+│   ├── style.css
+│   └── assets/adzan.mp3
+└── src-tauri/               # Backend Rust (tray, notifikasi, IPC)
+    ├── Cargo.toml
+    ├── tauri.conf.json
+    ├── capabilities/
+    └── src/
+        ├── main.rs
+        ├── lib.rs
+        ├── prayer_times.rs
+        ├── location.rs
+        ├── settings.rs
+        ├── notifications.rs
+        └── state.rs
 ```
 
 ---
 
 ## ⚙️ Pengaturan
 
-Buka pengaturan dengan mengklik ikon ⚙️ di pojok bawah popup.
+Buka pengaturan lewat ikon ⚙️ di pojok bawah popup.
 
-| Pengaturan          | Pilihan                                                              |
-| ------------------- | -------------------------------------------------------------------- |
-| **Tema Visual**     | Malam Ungu / Hijau Ketupat / Putih Porselen / Hitam Obsidian         |
-| **Autostart**       | Jalankan otomatis saat Windows startup                               |
-| **Audio Adzan**     | Aktifkan/nonaktifkan, pilih file audio kustom                        |
-| **Mute per Waktu**  | Matikan suara untuk Subuh, Terbit, Dzuhur, Ashar, Maghrib, atau Isya |
-| **Lokasi**          | Otomatis (via IP) atau manual (input nama kota)                      |
-| **Koreksi Hijriah** | Tombol +/− untuk menyesuaikan tanggal Hijriah ±1 hari                |
-
----
-
-## 🤝 Kontribusi
-
-Kontribusi sangat disambut! Silakan:
-
-1. **Fork** repositori ini
-2. Buat branch fitur baru: `git checkout -b fitur/nama-fitur`
-3. Commit perubahan: `git commit -m 'Tambah fitur: ...'`
-4. Push ke branch: `git push origin fitur/nama-fitur`
-5. Buka **Pull Request**
-
-Untuk bug atau ide fitur, silakan buka [Issues](https://github.com/username/kuy-solat/issues).
+| Pengaturan          | Pilihan                                                      |
+| ------------------- | ------------------------------------------------------------ |
+| **Tema Visual**     | Malam Ungu / Hijau Ketupat / Putih Porselen / Hitam Obsidian |
+| **Autostart**       | Jalankan otomatis saat startup                               |
+| **Audio Adzan**     | Aktifkan/nonaktifkan, pilih file audio kustom                |
+| **Mute per Waktu**  | Matikan suara untuk Subuh–Isya                               |
+| **Lokasi**          | Otomatis (via IP) atau manual (nama kota)                    |
+| **Koreksi Hijriah** | Tombol +/− (±1 hari)                                         |
 
 ---
 
 ## 📋 Changelog
 
+### v2.0.0
+
+- 🚀 Migrasi dari Electron → **Tauri 2** (binary lebih kecil, RAM lebih hemat)
+- Backend Rust: tray, notifikasi, lokasi, settings, penjadwalan adzan
+- Context isolation bawaan WebView (tanpa `nodeIntegration`)
+- Hijri offset & settings disatukan di satu file konfigurasi
+
 ### v1.0.0
 
-- 🎉 Rilis perdana
-- Jadwal shalat 6 waktu (Subuh, Terbit, Dzuhur, Ashar, Maghrib, Isya)
-- Deteksi lokasi otomatis & manual
-- Notifikasi dan audio adzan
-- Mute selektif per waktu shalat
-- Koreksi tanggal Hijriah
-- 4 tema visual
-- Autostart saat Windows startup
-- Installer Windows (NSIS)
+- Rilis perdana berbasis Electron
 
 ---
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah **MIT License** — lihat file [LICENSE](./LICENSE) untuk detail.
-
----
+MIT License — lihat [LICENSE](./LICENSE).
 
 <div align="center">
 
