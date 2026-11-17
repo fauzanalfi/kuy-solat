@@ -1,39 +1,23 @@
 {
   "name": "kuy-solat",
-  "version": "1.0.0",
-  "description": "Aplikasi jadwal shalat di taskbar Windows",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "build": "electron-builder --win"
-  },
+  "version": "2.0.0",
+  "description": "Aplikasi jadwal shalat native di system tray (Tauri)",
   "author": "Fauzan",
   "license": "MIT",
-  "dependencies": {
-    "adhan": "^4.4.3",
-    "dialog": "^0.3.1",
-    "dotenv": "^17.3.1",
-    "electron-store": "^8.1.0"
-  },
-  "build": {
-    "appId": "com.fauzan.kuysolat",
-    "productName": "Kuy Solat",
-    "directories": {
-      "output": "dist"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "assets/icon.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
-    }
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "icon": "tauri icon assets/icon.png"
   },
   "devDependencies": {
-    "electron": "^28.1.0",
-    "electron-builder": "^26.8.1"
+    "@tauri-apps/cli": "^2"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-autostart": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-notification": "^2"
   }
 }
