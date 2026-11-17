@@ -68,6 +68,8 @@ Aplikasi muncul di **system tray**. Klik ikonnya untuk membuka jadwal shalat.
 
 ## 📦 Build Installer
 
+### Lokal
+
 ```bash
 # (opsional) regenerate ikon dari assets/icon.png
 npm run icon
@@ -76,7 +78,25 @@ npm run icon
 npm run build
 ```
 
-Output ada di `src-tauri/target/release/bundle/` (NSIS/MSI di Windows, deb/AppImage di Linux, dmg di macOS).
+Output ada di `src-tauri/target/release/bundle/` (NSIS di Windows, deb/AppImage di Linux, dmg di macOS).
+
+### GitHub Actions
+
+Workflow otomatis sudah disiapkan:
+
+| Workflow | Trigger | Hasil |
+| -------- | ------- | ----- |
+| **CI** (`.github/workflows/ci.yml`) | Push / PR | Build Windows + Linux + macOS, upload artifacts |
+| **Release** (`.github/workflows/release.yml`) | Tag `v*` atau *Run workflow* | Draft GitHub Release berisi installer |
+
+Contoh rilis:
+
+```bash
+git tag v2.0.0
+git push origin v2.0.0
+```
+
+Installer Windows (`.exe` NSIS) ikut ter-build di runner `windows-latest` — tidak perlu mesin Windows lokal.
 
 ---
 
